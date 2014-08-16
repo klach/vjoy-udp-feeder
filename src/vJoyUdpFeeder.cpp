@@ -38,7 +38,7 @@ _tmain(__in int argc, __in PZPWSTR argv)
 	}
 	else
 	{
-		_tprintf("Vendor: %S\nProduct :%S\nVersion Number:%S\n", TEXT(GetvJoyManufacturerString()),  TEXT(GetvJoyProductString()), TEXT(GetvJoySerialNumberString()));
+		_tprintf("Vendor: %S\nProduct: %S\nVersion Number: %S\n", TEXT(GetvJoyManufacturerString()),  TEXT(GetvJoyProductString()), TEXT(GetvJoySerialNumberString()));
 	};
 
 	// Get the state of the requested device
@@ -99,7 +99,7 @@ _tmain(__in int argc, __in PZPWSTR argv)
 
 
 
-	_tprintf("\npress enter to start feeding");
+	_tprintf("\nPress enter to start feeding...");
 	getchar();
 
 	X = 20;
