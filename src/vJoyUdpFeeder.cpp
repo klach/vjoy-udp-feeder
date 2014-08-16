@@ -75,9 +75,9 @@ _tmain(__in int argc, __in PZPWSTR argv)
 
 	// Print results
 	_tprintf("\nvJoy Device %d capabilities:\n", iInterface);
-	_tprintf("Numner of buttons\t\t%d\n", nButtons);
-	_tprintf("Numner of Continuous POVs\t%d\n", ContPovNumber);
-	_tprintf("Numner of Descrete POVs\t\t%d\n", DiscPovNumber);
+	_tprintf("Number of buttons\t\t%d\n", nButtons);
+	_tprintf("Number of Continuous POVs\t%d\n", ContPovNumber);
+	_tprintf("Number of Discrete POVs\t\t%d\n", DiscPovNumber);
 	_tprintf("Axis X\t\t%s\n", AxisX?"Yes":"No");
 	_tprintf("Axis Y\t\t%s\n", AxisX?"Yes":"No");
 	_tprintf("Axis Z\t\t%s\n", AxisX?"Yes":"No");
@@ -99,7 +99,7 @@ _tmain(__in int argc, __in PZPWSTR argv)
 
 
 
-	_tprintf("\npress enter to stat feeding");
+	_tprintf("\npress enter to start feeding");
 	getchar();
 
 	X = 20;
