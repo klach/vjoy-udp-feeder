@@ -12,10 +12,6 @@
 #pragma comment( lib, "VJOYINTERFACE" )
 #define  _CRT_SECURE_NO_WARNINGS
 
-// Use either ROBUST or EFFICIENT functions
-#define ROBUST
-//#define EFFICIENT
-
 int
 __cdecl
 _tmain(__in int argc, __in PZPWSTR argv)
@@ -115,75 +111,6 @@ _tmain(__in int argc, __in PZPWSTR argv)
 	long value = 0;
 	BOOL res = FALSE;
 
-#ifdef ROBUST
-	// Reset this device to default values
-	ResetVJD(iInterface);
-
-	// Feed the device in endless loop
-	while(1)
-	{
-		// Set position of 4 axes
-		res = SetAxis(X, iInterface, HID_USAGE_X);
-		res = SetAxis(Y, iInterface, HID_USAGE_Y);
-		res = SetAxis(Z, iInterface, HID_USAGE_Z);
-		res = SetAxis(XR, iInterface, HID_USAGE_RX);
-		res = SetAxis(ZR, iInterface, HID_USAGE_RZ);
-
-		// Press/Release Buttons
-		res = SetBtn(TRUE, iInterface, count/50);
-		res = SetBtn(FALSE, iInterface, 1+count/50);
-
-		// If Continuous POV hat switches installed - make them go round
-		// For high values - put the switches in neutral state
-		if (ContPovNumber)
-		{
-			if ((count*70) < 30000)
-			{
-				res = SetContPov((DWORD)(count*70)		, iInterface, 1);
-				res = SetContPov((DWORD)(count*70)+2000	, iInterface, 2);
-				res = SetContPov((DWORD)(count*70)+4000	, iInterface, 3);
-				res = SetContPov((DWORD)(count*70)+6000	, iInterface, 4);
-			}
-			else
-			{
-				res = SetContPov(-1 , iInterface, 1);
-				res = SetContPov(-1 , iInterface, 2);
-				res = SetContPov(-1 , iInterface, 3);
-				res = SetContPov(-1 , iInterface, 4);
-			};
-		};
-
-		// If Discrete POV hat switches installed - make them go round
-		// From time to time - put the switches in neutral state
-		if (DiscPovNumber)
-		{
-			if (count < 550)
-			{
-				SetDiscPov(((count/20) + 0)%4, iInterface, 1);
-				SetDiscPov(((count/20) + 1)%4, iInterface, 2);
-				SetDiscPov(((count/20) + 2)%4, iInterface, 3);
-				SetDiscPov(((count/20) + 3)%4, iInterface, 4);
-			}
-			else
-			{
-				SetDiscPov(-1, iInterface, 1);
-				SetDiscPov(-1, iInterface, 2);
-				SetDiscPov(-1, iInterface, 3);
-				SetDiscPov(-1, iInterface, 4);
-			};
-		};
-
-		Sleep(20);
-		X+=150;
-		Y+=250;
-		Z+=350;
-		ZR-=200;
-		count++;
-		if (count > 640) count=0;
-	} // While
-#endif
-
-#ifdef EFFICIENT
 	// Start feeding in an endless loop
 	while (1)
 	{
@@ -249,7 +176,6 @@ _tmain(__in int argc, __in PZPWSTR argv)
 		ZR-=200;
 
 	};
-#endif
 
 	_tprintf("OK\n");
 
