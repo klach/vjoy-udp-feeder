@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="vJoyClient"
+	Name="vJoyUdpFeeder"
 	ProjectGUID="{A3C0D9FE-F4A3-45F9-874A-AC2E6806477C}"
-	RootNamespace="vJoyClient"
+	RootNamespace="vJoyUdpFeeder"
 	Keyword="Win32Proj"
 	TargetFrameworkVersion="196613"
 	>
@@ -490,7 +490,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\vJoyClient.cpp"
+				RelativePath=".\vJoyUdpFeeder.cpp"
 				>
 			</File>
 		</Filter>

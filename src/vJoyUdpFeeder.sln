@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual C++ Express 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vJoyClient", "vJoyClient.vcproj", "{A3C0D9FE-F4A3-45F9-874A-AC2E6806477C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "vJoyUdpFeeder", "vJoyUdpFeeder.vcproj", "{A3C0D9FE-F4A3-45F9-874A-AC2E6806477C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

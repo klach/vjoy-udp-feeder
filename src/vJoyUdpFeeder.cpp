@@ -1,4 +1,4 @@
-// vJoyClient.cpp : Simple feeder application
+// vJoyUdpFeeder.cpp : Simple feeder application
 //
 // Supports both types of POV Hats
 
