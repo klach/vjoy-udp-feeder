@@ -108,12 +108,45 @@ _tmain(__in int argc, __in PZPWSTR argv)
 	XR = 60;
 	ZR = 80;
 
+	WSAData data;
+	if (WSAStartup( MAKEWORD( 2, 2 ), &data ) != 0) {
+		_tprintf("Could not open Windows connection.\n");
+		return -1;
+	}
+
+	struct sockaddr_in server;
+	struct sockaddr_in client;
+	char buf[1024];
+	unsigned short server_port = 1608;
+	int sock = socket(AF_INET, SOCK_DGRAM, 0);
+	if (sock < 0) {
+		_tprintf("Could not create socket.\n");
+		WSACleanup();
+		return -1;
+	}
+	memset(&server, 0, sizeof(struct sockaddr_in));
+	server.sin_family = AF_INET;
+	server.sin_addr.s_addr = INADDR_ANY;
+	server.sin_port = htons(server_port);
+	if (bind(sock, (struct sockaddr *)&server, sizeof(struct sockaddr_in)) < 0) {
+		_tprintf("Could not bind socket.\n");
+		closesocket(sock);
+		WSACleanup();
+		return -1;
+	}
+	int client_length = sizeof(struct sockaddr_in);
+
 	long value = 0;
 	BOOL res = FALSE;
 
 	// Start feeding in an endless loop
 	while (1)
 	{
+		int bytes_received = recvfrom(sock, buf, 1024, 0, (struct sockaddr *)&client, &client_length);
+		if (bytes_received < 0) {
+			_tprintf("Could not receive datagram.\n");
+			continue;
+		}
 
 		/*** Create the data packet that holds the entire position info ***/
 		id = (BYTE)iInterface;
@@ -176,6 +209,9 @@ _tmain(__in int argc, __in PZPWSTR argv)
 		ZR-=200;
 
 	};
+
+	closesocket(sock);
+	WSACleanup();
 
 	_tprintf("OK\n");
 
