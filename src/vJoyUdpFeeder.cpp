@@ -16,29 +16,34 @@ int
 __cdecl
 _tmain(__in int argc, __in PZPWSTR argv)
 {
+	_tprintf("Usage: vJoyUdpFeeder [device number] [port]\n\n");
 
 	USHORT X, Y, Z, ZR, XR;							// Position of several axes
 	JOYSTICK_POSITION	iReport;					// The structure that holds the full position data
-	BYTE id=1;										// ID of the target vjoy device (Default is 1)
+	BYTE id=1;										// ID of the target vJoy device (Default is 1)
 	UINT iInterface=1;								// Default target vJoy device
 	BOOL ContinuousPOV=FALSE;						// Continuous POV hat (or 4-direction POV Hat)
 	int count=0;
+	int argPort=0;
 
 
 	// Get the ID of the target vJoy device
 	if (argc>1 && wcslen(argv[1]))
 		sscanf_s((char *)(argv[1]), "%d", &iInterface);
 
+	if (argc>2 && wcslen(argv[2]))
+		sscanf_s((char *)(argv[2]), "%d", &argPort);
+
 
 	// Get the driver attributes (Vendor ID, Product ID, Version Number)
 	if (!vJoyEnabled())
 	{
-		_tprintf("vJoy driver not enabled: Failed Getting vJoy attributes.\n");
+		_tprintf("vJoy driver not enabled: Failed getting vJoy attributes.\n");
 		return -2;
 	}
 	else
 	{
-		_tprintf("Vendor: %S\nProduct: %S\nVersion Number: %S\n", TEXT(GetvJoyManufacturerString()),  TEXT(GetvJoyProductString()), TEXT(GetvJoySerialNumberString()));
+		_tprintf("Vendor: %S\nProduct: %S\nVersion number: %S\n", TEXT(GetvJoyManufacturerString()),  TEXT(GetvJoyProductString()), TEXT(GetvJoySerialNumberString()));
 	};
 
 	// Get the state of the requested device
@@ -46,19 +51,19 @@ _tmain(__in int argc, __in PZPWSTR argv)
 	switch (status)
 	{
 	case VJD_STAT_OWN:
-		_tprintf("vJoy Device %d is already owned by this feeder\n", iInterface);
+		_tprintf("vJoy device %d is already owned by this feeder\n", iInterface);
 		break;
 	case VJD_STAT_FREE:
-		_tprintf("vJoy Device %d is free\n", iInterface);
+		_tprintf("vJoy device %d is free\n", iInterface);
 		break;
 	case VJD_STAT_BUSY:
-		_tprintf("vJoy Device %d is already owned by another feeder\nCannot continue\n", iInterface);
+		_tprintf("vJoy device %d is already owned by another feeder\nCannot continue\n", iInterface);
 		return -3;
 	case VJD_STAT_MISS:
-		_tprintf("vJoy Device %d is not installed or disabled\nCannot continue\n", iInterface);
+		_tprintf("vJoy device %d is not installed or disabled\nCannot continue\n", iInterface);
 		return -4;
 	default:
-		_tprintf("vJoy Device %d general error\nCannot continue\n", iInterface);
+		_tprintf("vJoy device %d general error\nCannot continue\n", iInterface);
 		return -1;
 	};
 
@@ -74,7 +79,7 @@ _tmain(__in int argc, __in PZPWSTR argv)
 	int DiscPovNumber = GetVJDDiscPovNumber(iInterface);
 
 	// Print results
-	_tprintf("\nvJoy Device %d capabilities:\n", iInterface);
+	_tprintf("\nvJoy device %d capabilities:\n", iInterface);
 	_tprintf("Number of buttons\t\t%d\n", nButtons);
 	_tprintf("Number of Continuous POVs\t%d\n", ContPovNumber);
 	_tprintf("Number of Discrete POVs\t\t%d\n", DiscPovNumber);
@@ -99,7 +104,7 @@ _tmain(__in int argc, __in PZPWSTR argv)
 
 
 
-	_tprintf("\nPress enter to start feeding...");
+	_tprintf("\nPress enter to start feeding...\n");
 	getchar();
 
 	X = 20;
@@ -117,7 +122,7 @@ _tmain(__in int argc, __in PZPWSTR argv)
 	struct sockaddr_in server;
 	struct sockaddr_in client;
 	char buf[1024];
-	unsigned short server_port = 1608;
+	unsigned short server_port = (argPort < 1024 || argPort > 65535) ? 1608 : argPort;
 	int sock = socket(AF_INET, SOCK_DGRAM, 0);
 	if (sock < 0) {
 		_tprintf("Could not create socket.\n");
@@ -134,6 +139,7 @@ _tmain(__in int argc, __in PZPWSTR argv)
 		WSACleanup();
 		return -1;
 	}
+	_tprintf("Listening on UDP port %d.\n", server_port);
 	int client_length = sizeof(struct sockaddr_in);
 
 	long value = 0;
