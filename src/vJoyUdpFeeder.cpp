@@ -22,7 +22,6 @@ _tmain(__in int argc, __in PZPWSTR argv)
 	BYTE id=1;										// ID of the target vJoy device (Default is 1)
 	UINT iInterface=1;								// Default target vJoy device
 	// BOOL ContinuousPOV=FALSE;						// Continuous POV hat (or 4-direction POV Hat)
-	int count=0;
 	int argPort=0;
 
 
@@ -75,7 +74,7 @@ _tmain(__in int argc, __in PZPWSTR argv)
 	BOOL AxisRZ = GetVJDAxisExist(iInterface, HID_USAGE_RZ);
 	BOOL Slider = GetVJDAxisExist(iInterface, HID_USAGE_SL0);
 	BOOL Dial   = GetVJDAxisExist(iInterface, HID_USAGE_SL1);
-	// Get the number of buttons and POV Hat switchessupported by this vJoy device
+	// Get the number of buttons and POV Hat switches supported by this vJoy device
 	int nButtons  = GetVJDButtonNumber(iInterface);
 	int ContPovNumber = GetVJDContPovNumber(iInterface);
 	int DiscPovNumber = GetVJDDiscPovNumber(iInterface);
@@ -149,7 +148,7 @@ _tmain(__in int argc, __in PZPWSTR argv)
 			_tprintf("Could not receive datagram.\n");
 			continue;
 		}
-		if (bytes_received < 8*sizeof(long)) {
+		if (bytes_received < 11*sizeof(long)) {
 			_tprintf("Received too short datagram of %d bytes.\n", bytes_received);
 			continue;
 		}
@@ -177,36 +176,24 @@ _tmain(__in int argc, __in PZPWSTR argv)
 		iReport.wDial=ntohl(*((long *)pbuf));
 		pbuf += sizeof(long);
 
-		// Set buttons one by one
-		iReport.lButtons = 1<<count/20;
+		iReport.lButtons = ntohl(*((long *)pbuf));
+		pbuf += sizeof(long);
+
+		long contPov = ntohl(*((long *)pbuf));
+		pbuf += sizeof(long);
+		long discPovs = ntohl(*((long *)pbuf));
+		pbuf += sizeof(long);
 
 		if (ContPovNumber)
 		{
-			// Make Continuous POV Hat spin
-			iReport.bHats		= (DWORD)(count*70);
-			iReport.bHatsEx1	= (DWORD)(count*70)+3000;
-			iReport.bHatsEx2	= (DWORD)(count*70)+5000;
-			iReport.bHatsEx3	= 15000 - (DWORD)(count*70);
-			if ((count*70) > 36000)
-			{
-				iReport.bHats = -1; // Neutral state
-				iReport.bHatsEx1 = -1; // Neutral state
-				iReport.bHatsEx2 = -1; // Neutral state
-				iReport.bHatsEx3 = -1; // Neutral state
-			};
+			iReport.bHats		= (DWORD)contPov;
+			iReport.bHatsEx1	= -1; // Neutral state
+			iReport.bHatsEx2	= -1; // Neutral state
+			iReport.bHatsEx3	= -1; // Neutral state
 		}
 		else
 		{
-			// Make 5-position POV Hat spin
-			unsigned char pov[4];
-			pov[0] = ((count/20) + 0)%4;
-			pov[1] = ((count/20) + 1)%4;
-			pov[2] = ((count/20) + 2)%4;
-			pov[3] = ((count/20) + 3)%4;
-
-			iReport.bHats		= (pov[3]<<12) | (pov[2]<<8) | (pov[1]<<4) | pov[0];
-			if ((count) > 550)
-				iReport.bHats = -1; // Neutral state
+			iReport.bHats		= (DWORD)discPovs;
 		};
 
 		/*** Feed the driver with the position packet - is fails then wait for input then try to re-acquire device ***/
@@ -217,10 +204,6 @@ _tmain(__in int argc, __in PZPWSTR argv)
 			AcquireVJD(iInterface);
 			// ContinuousPOV = (BOOL)GetVJDContPovNumber(iInterface);
 		}
-
-				Sleep(20);
-		count++;
-		if (count > 640) count=0;
 
 	};
 
