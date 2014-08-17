@@ -186,14 +186,14 @@ _tmain(__in int argc, __in PZPWSTR argv)
 
 		if (ContPovNumber)
 		{
-			iReport.bHats		= (DWORD)contPov;
+			iReport.bHats		= contPov;
 			iReport.bHatsEx1	= -1; // Neutral state
 			iReport.bHatsEx2	= -1; // Neutral state
 			iReport.bHatsEx3	= -1; // Neutral state
 		}
 		else
 		{
-			iReport.bHats		= (DWORD)discPovs;
+			iReport.bHats		= discPovs;
 		};
 
 		/*** Feed the driver with the position packet - is fails then wait for input then try to re-acquire device ***/
