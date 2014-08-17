@@ -72,7 +72,10 @@ _tmain(__in int argc, __in PZPWSTR argv)
 	BOOL AxisY  = GetVJDAxisExist(iInterface, HID_USAGE_Y);
 	BOOL AxisZ  = GetVJDAxisExist(iInterface, HID_USAGE_Z);
 	BOOL AxisRX = GetVJDAxisExist(iInterface, HID_USAGE_RX);
+	BOOL AxisRY = GetVJDAxisExist(iInterface, HID_USAGE_RY);
 	BOOL AxisRZ = GetVJDAxisExist(iInterface, HID_USAGE_RZ);
+	BOOL Slider = GetVJDAxisExist(iInterface, HID_USAGE_SL0);
+	BOOL Dial   = GetVJDAxisExist(iInterface, HID_USAGE_SL1);
 	// Get the number of buttons and POV Hat switchessupported by this vJoy device
 	int nButtons  = GetVJDButtonNumber(iInterface);
 	int ContPovNumber = GetVJDContPovNumber(iInterface);
@@ -84,10 +87,13 @@ _tmain(__in int argc, __in PZPWSTR argv)
 	_tprintf("Number of Continuous POVs\t%d\n", ContPovNumber);
 	_tprintf("Number of Discrete POVs\t\t%d\n", DiscPovNumber);
 	_tprintf("Axis X\t\t%s\n", AxisX?"Yes":"No");
-	_tprintf("Axis Y\t\t%s\n", AxisX?"Yes":"No");
-	_tprintf("Axis Z\t\t%s\n", AxisX?"Yes":"No");
+	_tprintf("Axis Y\t\t%s\n", AxisY?"Yes":"No");
+	_tprintf("Axis Z\t\t%s\n", AxisZ?"Yes":"No");
 	_tprintf("Axis Rx\t\t%s\n", AxisRX?"Yes":"No");
+	_tprintf("Axis Ry\t\t%s\n", AxisRY?"Yes":"No");
 	_tprintf("Axis Rz\t\t%s\n", AxisRZ?"Yes":"No");
+	_tprintf("Slider\t\t%s\n", Slider?"Yes":"No");
+	_tprintf("Dial\t\t%s\n", Dial?"Yes":"No");
 
 
 
