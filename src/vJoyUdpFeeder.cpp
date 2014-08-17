@@ -18,11 +18,10 @@ _tmain(__in int argc, __in PZPWSTR argv)
 {
 	_tprintf("Usage: vJoyUdpFeeder [device number] [port]\n\n");
 
-	USHORT X, Y, Z, ZR, XR;							// Position of several axes
 	JOYSTICK_POSITION	iReport;					// The structure that holds the full position data
 	BYTE id=1;										// ID of the target vJoy device (Default is 1)
 	UINT iInterface=1;								// Default target vJoy device
-	BOOL ContinuousPOV=FALSE;						// Continuous POV hat (or 4-direction POV Hat)
+	// BOOL ContinuousPOV=FALSE;						// Continuous POV hat (or 4-direction POV Hat)
 	int count=0;
 	int argPort=0;
 
@@ -113,12 +112,6 @@ _tmain(__in int argc, __in PZPWSTR argv)
 	_tprintf("\nPress enter to start feeding...\n");
 	getchar();
 
-	X = 20;
-	Y = 30;
-	Z = 40;
-	XR = 60;
-	ZR = 80;
-
 	WSAData data;
 	if (WSAStartup( MAKEWORD( 2, 2 ), &data ) != 0) {
 		_tprintf("Could not open Windows connection.\n");
@@ -148,9 +141,6 @@ _tmain(__in int argc, __in PZPWSTR argv)
 	_tprintf("Listening on UDP port %d.\n", server_port);
 	int client_length = sizeof(struct sockaddr_in);
 
-	long value = 0;
-	BOOL res = FALSE;
-
 	// Start feeding in an endless loop
 	while (1)
 	{
@@ -159,16 +149,33 @@ _tmain(__in int argc, __in PZPWSTR argv)
 			_tprintf("Could not receive datagram.\n");
 			continue;
 		}
+		if (bytes_received < 8*sizeof(long)) {
+			_tprintf("Received too short datagram of %d bytes.\n", bytes_received);
+			continue;
+		}
 
 		/*** Create the data packet that holds the entire position info ***/
 		id = (BYTE)iInterface;
 		iReport.bDevice = id;
 
-		iReport.wAxisX=X;
-		iReport.wAxisY=Y;
-		iReport.wAxisZ=Z;
-		iReport.wAxisZRot=ZR;
-		iReport.wAxisXRot=XR;
+		char *pbuf = buf;
+
+		iReport.wAxisX=ntohl(*((long *)pbuf));
+		pbuf += sizeof(long);
+		iReport.wAxisY=ntohl(*((long *)pbuf));
+		pbuf += sizeof(long);
+		iReport.wAxisZ=ntohl(*((long *)pbuf));
+		pbuf += sizeof(long);
+		iReport.wAxisXRot=ntohl(*((long *)pbuf));
+		pbuf += sizeof(long);
+		iReport.wAxisYRot=ntohl(*((long *)pbuf));
+		pbuf += sizeof(long);
+		iReport.wAxisZRot=ntohl(*((long *)pbuf));
+		pbuf += sizeof(long);
+		iReport.wSlider=ntohl(*((long *)pbuf));
+		pbuf += sizeof(long);
+		iReport.wDial=ntohl(*((long *)pbuf));
+		pbuf += sizeof(long);
 
 		// Set buttons one by one
 		iReport.lButtons = 1<<count/20;
@@ -208,17 +215,12 @@ _tmain(__in int argc, __in PZPWSTR argv)
 			_tprintf("Feeding vJoy device number %d failed - try to enable device then press enter\n", iInterface);
 			getchar();
 			AcquireVJD(iInterface);
-			ContinuousPOV = (BOOL)GetVJDContPovNumber(iInterface);
+			// ContinuousPOV = (BOOL)GetVJDContPovNumber(iInterface);
 		}
 
 				Sleep(20);
 		count++;
 		if (count > 640) count=0;
-
-		X+=150;
-		Y+=250;
-		Z+=350;
-		ZR-=200;
 
 	};
 
